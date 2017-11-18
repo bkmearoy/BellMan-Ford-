@@ -36,6 +36,7 @@ class Bellman{
         void BellmanFord();
 	
 };
+
 // Read file through constructor 
 Bellman::Bellman(){
 	std::string line;
@@ -43,8 +44,6 @@ Bellman::Bellman(){
 	char incoming_input;
 	int weight_input;
 	
-    std::cout<<"\nStep 1: Read Input line-by-line " <<std::endl;
-    std::cout<<"************************************\n";
 	while(std::getline(std::cin,line)){//read input file
 		std::cout<<line<<std::endl;
 		std::vector<std::string> parsed_lines;
@@ -58,15 +57,18 @@ Bellman::Bellman(){
         std::string source=pLine;
         wVertex vertex(source);//creates the vertex based on first input
         std::string fLine;
-        while((pLine = strtok(NULL, ";"))!=NULL){//parses through the rest of the edges
+        
+        while((pLine = strtok(NULL, ";"))!=NULL){
+          //parses through the rest of the edges
         	fLine=pLine;
-        	parsed_lines.push_back(fLine);//adds rest to list of edges
+        	parsed_lines.emplace_back(fLine);//adds rest to list of edges
         }
         if(parsed_lines.size()==0){//makes sure vertex has edges
-			V_tracts.push_back(vertex);
+			V_tracts.emplace_back(vertex);
         	continue;
         }
-        for(int i=0;i<parsed_lines.size();i++){//now to get rid of parenthesis and commas to look for dest. and cost.
+        for(int i=0;i<parsed_lines.size();i++){
+           //now to get rid of parenthesis and commas to look for dest. and cost.
 			char *oldLine = new char[parsed_lines[i].length() + 1];
    	        strcpy(oldLine, parsed_lines[i].c_str());
    	        char *parLine;
@@ -81,39 +83,26 @@ Bellman::Bellman(){
    			costw.erase(costw.length() - 1, 1); //erase ) at last position
    			int cost=atoi(costw.c_str());
    			wEdge edge(cost,source,destVertex);//adds new edge to vertex
-   			E_tracts.push_back(edge);
+   			E_tracts.emplace_back(edge);
         }
-		V_tracts.push_back(vertex);
+		V_tracts.emplace_back(vertex);
 	}
-	std::cout<<"**********************************************************************\n";
 }
 
 //printfunction to print final Shortest distance from a single source
 void Bellman::StorePrint(){
-    std::cout << "\nStep 2: store Data as  source/dest/cost "<<std::endl;
-    std::cout<<"********************************************"<<std::endl;
-    std::cout<<"src  dest  cost" <<std::endl;
-    for(unsigned int  i=0; i<E_tracts.size();i++){
-        std::cout<<E_tracts[i].src <<"      "<<E_tracts[i].dest<< "     " <<E_tracts[i].cost << std::endl;
-        
-    }
     
-    std::cout << std::endl;
-    
+    for( auto it: E_tracts)
+    {
+      std::cout<<it.src <<"|---|" <<it.dest <<"|----|" <<it.cost <<std::endl;
+    } 
+    std::cout << std::endl;    
 }
 
 // Bellman Ford algorithm used to find shortes distance from a
 // single source and also ditects negative weight cycle.
 void Bellman::BellmanFord(){
-    int V =V_tracts.size();
-    int E =E_tracts.size();
-    std::cout << "\nStep 3: Calculate number of Vertex (V) and Edges (E) " <<std::endl;
-    std::cout<<"***********************************************************"<<std::endl;
-    std::cout<<"V: "<<V_tracts.size() <<std::endl;
-    std::cout<<"E: "<<E_tracts.size() <<std::endl;
-    
-    std::cout << "\nStep 4: Initialize the distance star vertex to (0) & the rest to (INT_MAX)-Infinity "<<std::endl;
-    std::cout<<"**************************************************************************************"<<std::endl;
+ 
     // set the first vertex as a single source
     source=V_tracts[0].src;
     for(int i=0;i<V_tracts.size();i++){
@@ -131,9 +120,6 @@ void Bellman::BellmanFord(){
      Relax all edges |V| - 1 times. A simple shortest path from src
      to any other vertex can have at-most |V| - 1 edges
      **/
-    
-    std::cout << "\nStep 5: Relax all edges/Distance from the source "<<std::endl;
-    std::cout<<"******************************************************"<<std::endl;
     for(int i=1;i<V_tracts.size()-1;i++){//go through and find initial shortest distance
         for(int j=0;j<E_tracts.size();j++){
             std::string src = E_tracts[j].src;
@@ -160,7 +146,6 @@ void Bellman::BellmanFord(){
                 for(int k=0;k<V_tracts.size();k++){
                     std::cout<<V_tracts[k].src<<": "<<V_tracts[k].distance<<std::endl;
                 }
-                std::cout<<"**********************"<<std::endl;
             }
         }
     }
@@ -168,11 +153,7 @@ void Bellman::BellmanFord(){
     /**
      check for negative-weight cycles, if graph doesn't contain negative weight cycle.
      print call to print the shortes path else: print  negative weight cycle detected
-     **/
-   // bool found=false;
-    std::cout << "\nStep 6: Check if negative Weigh Cycle at vertext Exist "<<std::endl;
-    std::cout<<"************************************************************"<<std::endl;
-    
+     **/ 
     bool found=false;
     for(int i=0;i<E_tracts.size();i++){
         std::string src = E_tracts[i].src;
@@ -198,24 +179,19 @@ void Bellman::BellmanFord(){
     if(!found){
         std::cout<<"No negative cycles."<<std::endl;
     }
-    
-    std::cout << "\nStep 7: Final print of shortest distance from a single source "<<std::endl;
-    std::cout<<"******************************************************************"<<std::endl;
+    //print shortest distance 
     std::cout<<"Vertex  Shortest Distance" <<std::endl;
-    for(int k=0;k<V_tracts.size();k++){
-        std::cout<<V_tracts[k].src<<"        "<<V_tracts[k].distance <<std::endl;
-      
+    for(auto is :V_tracts){
+      std::cout<<is.src<<"|------|"<<is.distance<<std::endl;
     }
-
   return;
 }// end of Bellman_Ford funtion 
-
 
 // main funtion
 int main(void){
     Bellman D;
     D.StorePrint();
     D.BellmanFord();
-    
+	
     return 0;
 }
