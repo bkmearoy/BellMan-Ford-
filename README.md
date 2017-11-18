@@ -8,5 +8,5 @@
  will be dispalayed.    
  
  How compile/run prgrm:    
- 1. g++ BellmanFord.cpp  
+ 1. g++ -std=c++11 BellmanFord.cpp  
  2. ./a.out < input.txt
